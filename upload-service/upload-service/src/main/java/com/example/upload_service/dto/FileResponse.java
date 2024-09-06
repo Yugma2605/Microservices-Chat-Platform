@@ -1,16 +1,18 @@
 package com.example.upload_service.dto;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.Data;
 
-@Data
-public class FileResponse {
-    private String fileName;
-    private String message;
+import java.util.Date;
 
-    public FileResponse(String fileName, String message) {
-        this.fileName = fileName;
-        this.message = message;
-    }
+public record FileResponse(Long id,
 
-    // Getters and setters
-}
+ String fileName,
+ String filePath,
+ Long userId,
+ String username,
+ Long fileSize,
+ String fileType,
+ Date uploadDate){}
