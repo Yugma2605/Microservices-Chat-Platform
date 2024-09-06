@@ -8,6 +8,7 @@ import lombok.Data;
 import java.util.Date;
 
 public record FileResponse(Long id,
+
  String fileName,
  String filePath,
  Long userId,
