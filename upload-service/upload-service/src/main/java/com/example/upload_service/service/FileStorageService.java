@@ -15,15 +15,19 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
-
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 @Service
 @Data
 @RequiredArgsConstructor
@@ -31,6 +35,8 @@ import java.util.UUID;
 public class FileStorageService {
 
     private final S3Client s3Client;
+
+    private final S3Presigner s3Presigner;
 
     private String bucketName;
 
@@ -47,6 +53,13 @@ public class FileStorageService {
             @Value("${aws.s3.secret-key}") String secretKey) {
 
         this.s3Client = S3Client.builder()
+                .region(Region.of(region))
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(accessKey, secretKey)
+                ))
+                .build();
+
+        this.s3Presigner = S3Presigner.builder()
                 .region(Region.of(region))
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(accessKey, secretKey)
@@ -104,4 +117,39 @@ public class FileStorageService {
             throw new RuntimeException("Failed to upload file to S3", e);
         }
     }
+
+    public String extractFileKeyFromUrl(String s3Url) {
+        String bucketUrlPrefix = String.format("https://%s.s3.%s.amazonaws.com/", bucketName, region);
+        if (s3Url.startsWith(bucketUrlPrefix)) {
+            return s3Url.substring(bucketUrlPrefix.length());
+        } else {
+            throw new IllegalArgumentException("Provided URL does not match S3 bucket URL pattern");
+        }
+    }
+
+    public String createPresignedGetUrl(String s3Url) {
+        try (S3Presigner presigner = S3Presigner.builder()
+                .region(Region.of(region)) // Change this to your bucket's region
+                .build()) {
+            log.info(s3Url);
+            String fileKey = extractFileKeyFromUrl(s3Url);
+
+            GetObjectRequest objectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileKey)
+                    .build();
+
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofMinutes(10))  // The URL will expire in 10 minutes.
+                    .getObjectRequest(objectRequest)
+                    .build();
+
+            PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
+            log.info("Presigned URL: [{}]", presignedRequest.url().toString());
+            log.info("HTTP method: [{}]", presignedRequest.httpRequest().method());
+
+            return presignedRequest.url().toExternalForm();
+        }
+    }
+
 }

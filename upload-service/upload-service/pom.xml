@@ -74,11 +74,6 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.google.cloud.sql</groupId>
-			<artifactId>mysql-socket-factory</artifactId>
-			<version>1.13.1</version>
-		</dependency>
-		<dependency>
 			<groupId>com.google.cloud</groupId>
 			<artifactId>spring-cloud-gcp-dependencies</artifactId>
 			<version>5.6.0</version>
@@ -89,6 +84,10 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -113,6 +112,14 @@
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
 			<scope>test</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webflux</artifactId>
+        </dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webflux</artifactId>
 		</dependency>
 
 	</dependencies>
