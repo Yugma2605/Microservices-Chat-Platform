@@ -1,4 +1,4 @@
-package com.example.upload_service;
+package com.example.messaging_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,9 +8,15 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @SpringBootApplication
 @EnableEurekaServer
-public class UploadServiceApplication {
+public class MessagingServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(UploadServiceApplication.class, args);
+		SpringApplication.run(MessagingServiceApplication.class, args);
+	}
+
+
+	@Bean
+	public WebClient webClient() {
+		return WebClient.builder().build();
 	}
 }

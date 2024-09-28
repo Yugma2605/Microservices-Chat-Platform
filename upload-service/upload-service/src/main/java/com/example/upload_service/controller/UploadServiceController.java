@@ -18,6 +18,7 @@ public class UploadServiceController {
     private FileStorageService fileStorageService;
 
     @PostMapping
+    @CrossOrigin(origins = "http://localhost:63342")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<FileResponse> uploadFile(
             @RequestParam("file") MultipartFile file,
@@ -27,8 +28,24 @@ public class UploadServiceController {
         return new ResponseEntity<>(fileStorageService.uploadFile(file, userId, username), HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<String> test(){
-        return new ResponseEntity<>("HELLO", HttpStatus.OK);
+    @CrossOrigin(origins = "http://localhost:63342")
+    @GetMapping("/download")
+    public ResponseEntity<String> generateSignedUrl(
+            @RequestParam("fileUrl") String fileUrl) {
+        try {
+            String signedUrl = fileStorageService.createPresignedGetUrl(fileUrl);
+            return new ResponseEntity<>(signedUrl, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
+
+    @CrossOrigin(origins = "http://localhost:63342")
+    @GetMapping("/hello")
+    public ResponseEntity<String> test(
+            ) {
+        return new ResponseEntity<>("hello", HttpStatus.OK);
+    }
+
+
 }
