@@ -40,5 +40,12 @@ public class UploadServiceController {
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:63342")
+    @GetMapping("/hello")
+    public ResponseEntity<String> test(
+            ) {
+        return new ResponseEntity<>("hello", HttpStatus.OK);
+    }
+
 
 }
