@@ -3,6 +3,7 @@ package com.example.messaging_service.chat;
 import com.example.messaging_service.chatroom.ChatRoomService;
 import com.example.messaging_service.dto.FileRequest;
 import com.example.messaging_service.dto.FileResponse;
+import com.example.messaging_service.service.KafkaMessageProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,24 +17,30 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class ChatMessageService {
+
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomService chatRoomService;
     private final WebClient webClient;
+    private final KafkaMessageProducer kafkaMessageProducer;  // Injected KafkaMessageProducer bean
 
-    public ChatMessage save(ChatMessage chatMessage){
+    public ChatMessage save(ChatMessage chatMessage) {
         var chatId = chatRoomService.getChatRoomId(
                 chatMessage.getSenderId(),
                 chatMessage.getRecipientId(),
                 true
         ).orElseThrow();
-        log.info("ChatID assigned ::::::::::::::::: "+chatId);
+
+        log.info("ChatID assigned ::::::::::::::::: " + chatId);
         chatMessage.setChatId(chatId);
         chatMessageRepository.save(chatMessage);
+
+        // Use the KafkaMessageProducer bean to send a message
+        kafkaMessageProducer.sendMessage("message-events", chatMessage);
+
         return chatMessage;
     }
 
-
-    public FileResponse uploadFile(MultipartFile file, String userId, String userName){
+    public FileResponse uploadFile(MultipartFile file, String userId, String userName) {
         FileRequest fileRequest = FileRequest.builder()
                 .file(file)
                 .userId(userId)
@@ -47,9 +54,9 @@ public class ChatMessageService {
                 .bodyToMono(FileResponse.class).block();
 
         return fileResponse;
-
     }
-    public List<ChatMessage> findChatMessages(String senderId, String recipientId){
+
+    public List<ChatMessage> findChatMessages(String senderId, String recipientId) {
         var chatId = chatRoomService.getChatRoomId(
                 senderId,
                 recipientId,

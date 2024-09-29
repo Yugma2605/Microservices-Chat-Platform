@@ -3,6 +3,7 @@ package com.example.messaging_service.chat;
 
 import com.example.messaging_service.dto.FileResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.messaging_service.service.KafkaMessageProducer;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatMessageService chatMessageService;
+    private final KafkaMessageProducer kafkaMessageProducer;  // Injected KafkaMessageProducer bean
 
     @MessageMapping("/chat")
     @CrossOrigin("http://localhost:63342/")
@@ -60,5 +62,4 @@ public class ChatController {
         log.info("senderId:"+senderId);
         return ResponseEntity.ok(chatMessageService.findChatMessages(senderId, recipientId));
     }
-
 }
