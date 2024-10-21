@@ -15,6 +15,9 @@ target/
 .env
 application.properties
 
+# Ignore tokens folder that stores sensitive OAuth credentials
+tokens/
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
