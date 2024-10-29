@@ -36,3 +36,4 @@ build/
 
 ### VS Code ###
 .vscode/
+/google_application_credentials/

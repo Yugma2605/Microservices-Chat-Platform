@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upload-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: upload-service
+  template:
+    metadata:
+      labels:
+        app: upload-service
+    spec:
+      containers:
+        - name: upload-service
+          image: 897729134504.dkr.ecr.us-east-1.amazonaws.com/upload-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8084
+          env:
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://discovery-service:8761/eureka"
+            - name: "EUREKA_SERVER_HOST"
+              value: "discovery-service"
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/etc/credentials/google_application_credentials.json"  # Path to the credentials file
+          volumeMounts:
+            - name: google-credentials
+              mountPath: /etc/credentials  # Directory to mount the secret
+      volumes:
+        - name: google-credentials
+          secret:
+            secretName: google-credentials  # Name of the secret that contains the credentials
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: upload-service
+spec:
+  selector:
+    app: upload-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8084
+  type: LoadBalancer

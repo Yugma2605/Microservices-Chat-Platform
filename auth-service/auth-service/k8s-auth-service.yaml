@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: 897729134504.dkr.ecr.us-east-1.amazonaws.com/auth-service:latest
+          ports:
+            - containerPort: 8085
+          env:
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://discovery-service:8761/eureka"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://devDB?cloudSqlInstance=neat-pagoda-434617-g5:us-central1:microservicedb"
+            - name: "EUREKA_SERVER_HOST"
+              value: "discovery-service"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8085
+  type: LoadBalancer

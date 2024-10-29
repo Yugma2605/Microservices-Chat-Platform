@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  discovery-service:
+    image: yugma4255/discovery-service:latest
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    networks:
+      - spring-net
+
+  api-gateway:
+    image: yugma4255/api-gateway:latest
+    container_name: api-gateway
+    ports:
+      - "9000:9000"
+    depends_on:
+      - discovery-service
+    networks:
+      - spring-net
+
+  auth-service:
+    image: yugma4255/auth-service:latest
+    container_name: auth-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - discovery-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql:///devDB?cloudSqlInstance=neat-pagoda-434617-g5:us-central1:microservicedb&socketFactory=com.google.cloud.sql.mysql.SocketFactory&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/neat-pagoda-434617-g5-4de3b23c2de3.json
+    volumes:
+      - C:/Users/Yugma Patel/Downloads/neat-pagoda-434617-g5-4de3b23c2de3.json:/app/neat-pagoda-434617-g5-4de3b23c2de3.json
+
+    networks:
+      - spring-net
+
+  messaging-service:
+    image: yugma4255/messaging-service:latest
+    container_name: messaging-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - discovery-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql:///devDB?cloudSqlInstance=neat-pagoda-434617-g5:us-central1:microservicedb&socketFactory=com.google.cloud.sql.mysql.SocketFactory&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/neat-pagoda-434617-g5-4de3b23c2de3.json
+    volumes:
+      - C:/Users/Yugma Patel/Downloads/neat-pagoda-434617-g5-4de3b23c2de3.json:/app/neat-pagoda-434617-g5-4de3b23c2de3.json
+
+    networks:
+      - spring-net
+
+  upload-service:
+    image: yugma4255/upload-service:latest
+    container_name: upload-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - discovery-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql:///devDB?cloudSqlInstance=neat-pagoda-434617-g5:us-central1:microservicedb&socketFactory=com.google.cloud.sql.mysql.SocketFactory&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/neat-pagoda-434617-g5-4de3b23c2de3.json
+    volumes:
+      - C:/Users/Yugma Patel/Downloads/neat-pagoda-434617-g5-4de3b23c2de3.json:/app/neat-pagoda-434617-g5-4de3b23c2de3.json
+
+    networks:
+      - spring-net
+
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes   # This allows unauthenticated users to connect to ZooKeeper
+    networks:
+      - spring-net
+
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      - KAFKA_LISTENERS=INSIDE://:9093,OUTSIDE://:9092
+      - KAFKA_ADVERTISED_LISTENERS=INSIDE://kafka:9093,OUTSIDE://localhost:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes  # Allows Kafka to run without authentication (plaintext communication)
+    depends_on:
+      - zookeeper
+    networks:
+      - spring-net
+
+networks:
+  spring-net:
+    driver: bridge

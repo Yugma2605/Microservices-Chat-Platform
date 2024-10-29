@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: messaging-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: messaging-service
+  template:
+    metadata:
+      labels:
+        app: messaging-service
+    spec:
+      containers:
+        - name: messaging-service
+          image: 897729134504.dkr.ecr.us-east-1.amazonaws.com/messaging-service:latest
+          ports:
+            - containerPort: 8083
+          env:
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://discovery-service:8761/eureka"
+            - name: "EUREKA_SERVER_HOST"
+              value: "discovery-service"
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/etc/credentials/google_application_credentials.json"  # Path to the credentials file
+          volumeMounts:
+            - name: google-credentials
+              mountPath: /etc/credentials  # Directory to mount the secret
+      volumes:
+        - name: google-credentials
+          secret:
+            secretName: google-credentials  # Name of the secret that contains the credentials
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: messaging-service
+spec:
+  selector:
+    app: messaging-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8083
+  type: LoadBalancer
