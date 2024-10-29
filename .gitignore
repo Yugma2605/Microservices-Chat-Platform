@@ -13,7 +13,6 @@ target/
 .springBeans
 .sts4-cache
 .env
-application.properties
 
 # Ignore tokens folder that stores sensitive OAuth credentials
 tokens/
