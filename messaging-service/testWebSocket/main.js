@@ -12,13 +12,15 @@ const logout = document.querySelector('#logout');
 let stompClient = null;
 let userId = null;
 let fullname = null;
+let email = null;
 let selectedUserId = null;
 
 function connect(event) {
     userId = document.querySelector('#userId').value.trim();
     fullname = document.querySelector('#fullname').value.trim();
+    email = document.querySelector('#email').value.trim();
 
-    if (userId && fullname) {
+    if (userId && fullname && email) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
 
@@ -34,11 +36,11 @@ function connect(event) {
 function onConnected() {
     stompClient.subscribe(`/user/${userId}/queue/messages`, onMessageReceived);
     stompClient.subscribe(`/user/topic`, onMessageReceived);
-
+    console.log(email);
     // register the connected user
     stompClient.send("/app/user.addUser",
         {},
-        JSON.stringify({userId: userId, fullName: fullname, status: 'ONLINE'})
+        JSON.stringify({userId: userId, fullName: fullname, email: email, status: 'ONLINE'})
     );
     document.querySelector('#connected-user-fullname').textContent = fullname;
     findAndDisplayConnectedUsers().then();
@@ -67,7 +69,7 @@ function appendUserElement(user, connectedUsersList) {
     listItem.id = user.userId;
 
     const userImage = document.createElement('img');
-    userImage.src = '../img/user_icon.png';
+    userImage.src = 'user_icon.png';
     userImage.alt = user.fullName;
 
     const usernameSpan = document.createElement('span');
@@ -106,27 +108,61 @@ function userItemClick(event) {
 }
 
 function displayMessage(senderId, content, filePath, fileName, fileSize) {
-    if(content.length > 0){
-        const messageContainer = document.createElement('div');
-        messageContainer.classList.add('message');
-        if (senderId === userId) {
-            messageContainer.classList.add('sender');
-        } else {
-            messageContainer.classList.add('receiver');
-        }
+    const messageContainer = document.createElement('div');
+    messageContainer.classList.add('message');
+    if (senderId === userId) {
+        messageContainer.classList.add('sender');
+    } else {
+        messageContainer.classList.add('receiver');
+    }
+
+    // Add text content if present
+    if (content.length > 0) {
         const message = document.createElement('p');
         message.textContent = content;
         messageContainer.appendChild(message);
-        chatArea.appendChild(messageContainer);
     }
+
+    // Add file-related content if a file is attached
+    if (filePath) {
+        // Create a div for the download link
+        const downloadDiv = document.createElement('div');
+        downloadDiv.className = 'download-container'; // Add your styling class here
+
+        // Create the download link
+        const downloadLink = document.createElement('a');
+        downloadLink.href = filePath; // Use the filePath directly for the sender
+        downloadLink.textContent = `${fileName} (${formatFileSize(fileSize)})`;
+        downloadLink.target = '_blank';
+
+        // Create a download icon (you can use an SVG or a font icon)
+        const downloadIcon = document.createElement('img');
+        downloadIcon.src = 'download-svgrepo-com.svg'; // Update with your icon path
+        downloadIcon.alt = 'Download';
+        downloadIcon.className = 'download-icon'; // Add any styling class for the icon
+
+        // Append icon and link to the div
+        downloadDiv.appendChild(downloadIcon);
+        downloadDiv.appendChild(downloadLink);
+
+        // Append the download div to the message container
+        messageContainer.appendChild(downloadDiv);
+    }
+
+    // Append the message container to the chat area
+    chatArea.appendChild(messageContainer);
+
+    // Scroll the chat area to the bottom
+    chatArea.scrollTop = chatArea.scrollHeight;
 }
+
 
 async function fetchAndDisplayUserChat() {
     const userChatResponse = await fetch(`http://localhost:8083/messages/${userId}/${selectedUserId}`);
     const userChat = await userChatResponse.json();
     chatArea.innerHTML = '';
     userChat.forEach(chat => {
-        displayMessage(chat.senderId, chat.content, chat.fileInfo);
+        displayMessage(chat.senderId, chat.content, chat.filePath, chat.fileName, chat.fileSize);
     });
     chatArea.scrollTop = chatArea.scrollHeight;
 }
@@ -222,35 +258,15 @@ async function onMessageReceived(payload) {
     console.log('Message received', payload);
     const message = JSON.parse(payload.body);
 
+    // Display message directly
     if (selectedUserId && selectedUserId === message.senderId) {
-        displayMessage(message.senderId, message.content, message.filePath, message.fileName, message.fileSize);
-
-        if (message.filePath) {
-            // Create a div for the download link
-            const downloadDiv = document.createElement('div');
-            downloadDiv.className = 'download-container'; // Add your styling class here
-
-            // Create the download link
-            const downloadLink = document.createElement('a');
-            downloadLink.href = await downloadFile(message.filePath); // Ensure this is a Promise
-            downloadLink.textContent = `${message.fileName} (${formatFileSize(message.fileSize)})`;
-            downloadLink.target = '_blank';
-
-            // Create a download icon (you can use an SVG or a font icon)
-            const downloadIcon = document.createElement('img');
-            downloadIcon.src = 'download-svgrepo-com.svg'; // Update with your icon path
-            downloadIcon.alt = 'Download';
-            downloadIcon.className = 'download-icon'; // Add any styling class for the icon
-
-            // Append icon and link to the div
-            downloadDiv.appendChild(downloadIcon);
-            downloadDiv.appendChild(downloadLink);
-
-            // Append the download div to the chat area
-            chatArea.appendChild(downloadDiv);
-        }
-
-        chatArea.scrollTop = chatArea.scrollHeight;
+        displayMessage(
+            message.senderId,
+            message.content,
+            message.filePath,
+            message.fileName,
+            message.fileSize
+        );
     }
 
     if (selectedUserId) {
@@ -263,7 +279,7 @@ async function onMessageReceived(payload) {
     if (notifiedUser && !notifiedUser.classList.contains('active')) {
         const nbrMsg = notifiedUser.querySelector('.nbr-msg');
         nbrMsg.classList.remove('hidden');
-        nbrMsg.textContent = '';
+        nbrMsg.textContent = parseInt(nbrMsg.textContent || 0) + 1;
     }
 }
 

@@ -1,12 +1,14 @@
 package com.example.notification_service.service;
 
-import com.example.messaging_service.chat.ChatMessage;
+import com.example.shared.ChatNotification;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
-
+import com.example.notification_service.dto.EmailResponse;
 import java.io.IOException;
 
 @Service
@@ -14,23 +16,22 @@ import java.io.IOException;
 @Slf4j
 public class KafkaMessageConsumer {
 
-    private final GmailService emailService;
+    private final EmailService emailService; // Autowiring EmailService to send emails
+    @KafkaListener(topics = "message-events", groupId = "message-notification-group", containerFactory = "kafkaListenerContainerFactory")
+    public void consumeMessage(ChatNotification chatNotification) throws MessagingException, IOException {
+        log.info("Consumed chatNotification message: {}", chatNotification);
 
-    @KafkaListener(topics = "message-events", groupId = "message-notification-group")
-    public void consumeMessage(ChatMessage chatMessage) throws MessagingException, IOException {
-        log.info("Consumed event: {}", chatMessage);
 
-        // Extract the recipient email and send a notification
-        String recipientEmail = getEmailForUser(chatMessage.getRecipientId());
+        String recipientEmail = chatNotification.getRecipientEmail();
         String subject = "New Message Received!";
         String body = String.format("You have a new message from %s: %s",
-                chatMessage.getSenderId(), chatMessage.getContent());
+                chatNotification.getSenderId(), chatNotification.getContent());
 
-        emailService.sendEmail(recipientEmail, subject, body);
-    }
 
-    private String getEmailForUser(String recipientId) {
-        // Implement logic to retrieve email based on recipient ID
-        return "anshray11@gmail.com";
+        // Call the EmailService to send the email
+        String emailResponse = emailService.sendSimpleMail(chatNotification);
+
+        // Log the result of the email sending operation
+        log.info("Email sent: {}", emailResponse);
     }
 }

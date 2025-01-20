@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface SecretKeyRepository extends JpaRepository<SecretKeys, Long> {
+//    @Query("SELECT s FROM SecretKeys s WHERE s.keyName = :keyName")
     @Query("SELECT s FROM SecretKeys s WHERE s.keyName = :keyName")
     Optional<SecretKeys> findByKeyName(@Param("keyName") String keyName);
 }

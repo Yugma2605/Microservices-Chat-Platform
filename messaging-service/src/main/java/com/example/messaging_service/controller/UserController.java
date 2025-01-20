@@ -3,6 +3,7 @@ package com.example.messaging_service.controller;
 import com.example.messaging_service.service.UserService;
 import com.example.messaging_service.user.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -15,11 +16,13 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
     private final UserService userService;
     @MessageMapping("/user.addUser")
     @SendTo("/user/topic")
     public User addUser(@Payload User user){
+        log.info("user found: "+user.getEmail());
         userService.saveUser(user);
         return user;
     }

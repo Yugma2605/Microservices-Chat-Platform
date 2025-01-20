@@ -12,10 +12,13 @@ target/
 .settings
 .springBeans
 .sts4-cache
+
+#Ignore the credentials file for each service
 .env
 
 # Ignore tokens folder that stores sensitive OAuth credentials
 tokens/
+.pem
 
 ### IntelliJ IDEA ###
 .idea

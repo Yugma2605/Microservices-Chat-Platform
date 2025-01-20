@@ -46,6 +46,8 @@ public class FileStorageService {
     public FileStorageService(
             @Value("${aws.s3.bucket-name}") String bucketName,
             @Value("${aws.s3.region}") String region,
+//            @Value("${aws.s3.access-key-name}") String accessKeyName,
+//            @Value("${aws.s3.secret-key-name}") String secretKeyName,
             SecretKeyRepository secretKeyRepository,
             FileMetadataRepository fileMetadataRepository) {
 
@@ -53,13 +55,12 @@ public class FileStorageService {
         this.region = region;
         this.fileMetadataRepository = fileMetadataRepository;
 
-        // Fetch access key and secret key from the database
         String accessKey = secretKeyRepository.findByKeyName("aws.s3.access-key")
-                .orElseThrow(() -> new RuntimeException("Access key not found")).getKeyValue();
-
+                .orElseThrow(() -> new RuntimeException("Access key '"  + "' not found")).getKeyValue();
 
         String secretKey = secretKeyRepository.findByKeyName("aws.s3.secret-key")
-                .orElseThrow(() -> new RuntimeException("Secret key not found")).getKeyValue();
+                .orElseThrow(() -> new RuntimeException("Secret key '"  + "' not found")).getKeyValue();
+
 
         // Initialize S3 client and presigner
         this.s3Client = S3Client.builder()

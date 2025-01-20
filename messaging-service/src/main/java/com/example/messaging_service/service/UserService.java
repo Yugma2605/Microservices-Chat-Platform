@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +29,9 @@ public class UserService {
             repository.save(storedUser);
         }
 
+    }
+    public Optional<User> getEmailfromId(String userId){
+        return repository.findById(userId);
     }
     public List<User> findConnectedUsers(){
         return repository.findAllByStatus(Status.ONLINE);

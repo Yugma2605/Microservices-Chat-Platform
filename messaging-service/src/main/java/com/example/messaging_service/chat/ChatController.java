@@ -2,6 +2,7 @@ package com.example.messaging_service.chat;
 
 
 import com.example.messaging_service.dto.FileResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.messaging_service.service.KafkaMessageProducer;
 import lombok.Data;
@@ -25,11 +26,10 @@ public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatMessageService chatMessageService;
-    private final KafkaMessageProducer kafkaMessageProducer;  // Injected KafkaMessageProducer bean
 
     @MessageMapping("/chat")
     @CrossOrigin("http://localhost:63342/")
-    public void processMessage(@Payload ChatMessage chatMessage){
+    public void processMessage(@Payload ChatMessage chatMessage) throws JsonProcessingException {
         ChatMessage savedMsg = chatMessageService.save(chatMessage);
         log.info(savedMsg.getChatId()+" "+savedMsg.getRecipientId());
         // sending msg to queue {user}/queue/messages
