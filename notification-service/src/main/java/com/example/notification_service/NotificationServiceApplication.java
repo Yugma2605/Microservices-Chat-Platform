@@ -4,14 +4,13 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
-import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.context.annotation.Configuration;
 
 @SpringBootApplication
 @EnableEurekaServer
 public class NotificationServiceApplication {
     public static void main(String[] args) {
-        Dotenv dotenv = Dotenv.load();  // Loads .env file
+        Dotenv dotenv = Dotenv.load();
 
         // You can fetch variables from the .env file like this:
         String dbUrl = dotenv.get("DB_URL");
