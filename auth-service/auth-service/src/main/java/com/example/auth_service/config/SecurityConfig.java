@@ -30,9 +30,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+        // So here the authorizeHttpRequests checks whether each and every user is authenticated or Not.
+        // httpbasic is for postman requests
+        // sessionManagement helps us to make the session stateless ( no worry for CSRF or session hijacking )
+        // Why login and register has given permission because we can't just check for JWT at login and register page
+        // addFilterBefore is added for checking the JWT before it goes for the main filter of User Password Authentication
         return http.csrf(customizer -> customizer.disable()).
                 authorizeHttpRequests(request -> request
-                        .requestMatchers("login", "register").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
                         .anyRequest().authenticated()).
                 httpBasic(Customizer.withDefaults()).
                 sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -41,9 +46,12 @@ public class SecurityConfig {
     }
 
 
+    //By default it was using another Authentication Provider but we configured to use it on our own
+    // As we want to work with the databases so we have to make it on our own.
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        // This BCrypt is used by us to verify the user. If user enters the password then this authentication mechanism encrypts the password and check in the database.
         provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
         provider.setUserDetailsService(userDetailsService);
         return provider;

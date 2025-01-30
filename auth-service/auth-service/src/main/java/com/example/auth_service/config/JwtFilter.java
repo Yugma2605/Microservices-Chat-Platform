@@ -25,9 +25,13 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     ApplicationContext context;
 
+    // Here we are adding this abstract class of OncePerRequestFilter
+    // Why the name is OncePerRequestFilter as we are only checking this filter once during a request. Good inbuilt filter
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-//  Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJraWxsIiwiaWF0IjoxNzIzMTgzNzExLCJleHAiOjE3MjMxODM4MTl9.5nf7dRzKRiuGurN2B9dHh_M5xiu73ZzWPr6rbhOTTHs
+    //  The below mentioned will be the type of header that we will receive from client.
+    //  Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJraWxsIiwiaWF0IjoxNzIzMTgzNzExLCJleHAiOjE3MjMxODM4MTl9.5nf7dRzKRiuGurN2B9dHh_M5xiu73ZzWPr6rbhOTTHs
+
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String username = null;
@@ -36,7 +40,7 @@ public class JwtFilter extends OncePerRequestFilter {
             token = authHeader.substring(7);
             username = jwtService.extractUserName(token);
         }
-
+        // Username should not be null and it is not already authenticated then only enter the loop.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = context.getBean(MyUserDetailsSevice.class).loadUserByUsername(username);
             if (jwtService.validateToken(token, userDetails)) {
