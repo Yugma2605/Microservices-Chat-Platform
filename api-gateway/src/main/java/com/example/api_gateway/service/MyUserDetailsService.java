@@ -1,8 +1,10 @@
-package com.example.auth_service.service;
+package com.example.api_gateway.service;
 
-import com.example.auth_service.entity.UserPrincipal;
-import com.example.auth_service.entity.Users;
-import com.example.auth_service.repository.UserRepository;
+import com.example.api_gateway.entity.UserPrincipal;
+import com.example.api_gateway.entity.Users;
+import com.example.api_gateway.repository.UserRepository;
+//import org.jvnet.hk2.annotations.Service;
+import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,12 +14,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
 
 @Service
-public class MyUserDetailsSevice implements UserDetailsService {
-
+public class MyUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository repo;
 
@@ -58,3 +57,6 @@ public class MyUserDetailsSevice implements UserDetailsService {
     }
 
 }
+
+
+

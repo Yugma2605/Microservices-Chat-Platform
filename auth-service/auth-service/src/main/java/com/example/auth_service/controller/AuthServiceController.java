@@ -13,6 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.*;
+
 @RestController
 @Slf4j
 @RequestMapping("/api/auth")
@@ -27,12 +29,27 @@ public class AuthServiceController {
     @Autowired
     private MyUserDetailsSevice userService;
 
-
+    @CrossOrigin("http://localhost:63342/")
     @PostMapping("/login")
-    public String login(@RequestBody Users user){
-        return userService.verify(user);
+//    public String login(@RequestBody Users user){
+//        return userService.verify(user);
+//    }
+    public ResponseEntity<?> login(@RequestBody Users user) {
+        try {
+            String token = userService.verify(user);
+            Map<String, String> response = new HashMap<>();
+            response.put("status", "Success");
+            response.put("token", token);
+            return ResponseEntity.ok(response); // Return the token and success message as a Map
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("status", "Fail");
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse); // Return an error message
+        }
     }
 
+    @CrossOrigin("http://localhost:63342/")
     @PostMapping("/register")
     public Users createUser(@RequestBody Users user){
         return userService.Register(user);
@@ -55,6 +72,8 @@ public class AuthServiceController {
             throw new RuntimeException("User is not authenticated");
         }
     }
+
+    @CrossOrigin("http://localhost:63342/")
     @PostMapping("/validate")
     public ResponseEntity<String> validateToken(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

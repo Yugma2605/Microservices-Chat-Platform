@@ -1,4 +1,4 @@
-package com.example.auth_service.service;
+package com.example.api_gateway.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -25,13 +25,15 @@ public class JWTService {
     public JWTService(@Value("${jwt.secret}") String secretkey) {
         this.secretkey = secretkey; // Same key
     }
+
 //    public JWTService() {
 //
 //        try {
 //            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
 //            SecretKey sk = keyGen.generateKey();
 //            secretkey = Base64.getEncoder().encodeToString(sk.getEncoded());
-//        } catch (NoSuchAlgorithmException e) {
+//        }
+//        catch (NoSuchAlgorithmException e) {
 //            throw new RuntimeException(e);
 //        }
 //    }

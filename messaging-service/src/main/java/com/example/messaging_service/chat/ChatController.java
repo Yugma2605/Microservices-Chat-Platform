@@ -21,6 +21,7 @@ import java.util.List;
 @Data
 @RequiredArgsConstructor
 @Controller
+@RequestMapping("/api/messaging")
 @Slf4j
 public class ChatController {
 

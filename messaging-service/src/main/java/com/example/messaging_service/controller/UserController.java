@@ -11,11 +11,13 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/api/messaging")
 @Slf4j
 public class UserController {
     private final UserService userService;

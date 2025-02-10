@@ -1,19 +1,108 @@
 'use strict';
 
 const usernamePage = document.querySelector('#username-page');
+const loginPage = document.querySelector('#login-page');
+const registerPage = document.querySelector('#register-page');
 const chatPage = document.querySelector('#chat-page');
 const usernameForm = document.querySelector('#usernameForm');
+const loginForm = document.querySelector('#loginForm');
+const registerForm = document.querySelector('#registerForm');
 const messageForm = document.querySelector('#messageForm');
 const messageInput = document.querySelector('#message');
 const connectingElement = document.querySelector('.connecting');
 const chatArea = document.querySelector('#chat-messages');
 const logout = document.querySelector('#logout');
 
+const showRegister = document.querySelector('#showRegister');
+const showLogin = document.querySelector('#showLogin');
+
 let stompClient = null;
 let userId = null;
 let fullname = null;
 let email = null;
 let selectedUserId = null;
+
+showRegister.addEventListener('click', () => {
+    loginPage.classList.add('hidden');
+    registerPage.classList.remove('hidden');
+});
+
+showLogin.addEventListener('click', () => {
+    registerPage.classList.add('hidden');
+    loginPage.classList.remove('hidden');
+});
+
+
+// Handle Registration
+async function handleRegister(event) {
+    event.preventDefault();
+
+    const username = document.querySelector('#regUsername').value.trim();
+    const email = document.querySelector('#regEmail').value.trim();
+    const password = document.querySelector('#regPassword').value.trim();
+
+    try {
+        const response = await fetch('http://localhost:8085/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username,
+                email,
+                password
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            alert('Registration successful! Please login.');
+            registerPage.classList.add('hidden');
+            loginPage.classList.remove('hidden');
+        } else {
+            const error = await response.text();
+            alert('Registration failed: ' + error);
+        }
+    } catch (error) {
+        alert('Registration failed: ' + error.message);
+    }
+}
+
+// Handle Login
+async function handleLogin(event) {
+    event.preventDefault();
+
+    const email = document.querySelector('#loginEmail').value.trim();
+    const password = document.querySelector('#loginPassword').value.trim();
+
+    try {
+        const response = await fetch('http://localhost:8085/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email,
+                password
+            })
+        });
+
+        if (response.ok) {
+            const userData = await response.json();
+            userId = userData.userId;
+            fullname = userData.username;
+            email = userData.email;
+
+            // Connect to chat after successful login
+            connectToChat();
+        } else {
+            const error = await response.text();
+            alert('Login failed: ' + error);
+        }
+    } catch (error) {
+        alert('Login failed: ' + error.message);
+    }
+}
 
 function connect(event) {
     userId = document.querySelector('#userId').value.trim();
@@ -47,7 +136,7 @@ function onConnected() {
 }
 
 async function findAndDisplayConnectedUsers() {
-    const connectedUsersResponse = await fetch('http://localhost:8083/users');
+    const connectedUsersResponse = await fetch('http://localhost:8083/api/messaging/users');
     let connectedUsers = await connectedUsersResponse.json();
     connectedUsers = connectedUsers.filter(user => user.fullName !== fullname);
     const connectedUsersList = document.getElementById('connectedUsers');
@@ -158,7 +247,7 @@ function displayMessage(senderId, content, filePath, fileName, fileSize) {
 
 
 async function fetchAndDisplayUserChat() {
-    const userChatResponse = await fetch(`http://localhost:8083/messages/${userId}/${selectedUserId}`);
+    const userChatResponse = await fetch(`http://localhost:8083/api/messaging/messages/${userId}/${selectedUserId}`);
     const userChat = await userChatResponse.json();
     chatArea.innerHTML = '';
     userChat.forEach(chat => {

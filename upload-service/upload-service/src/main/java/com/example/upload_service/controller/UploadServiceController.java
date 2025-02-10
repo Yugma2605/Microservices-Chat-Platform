@@ -25,7 +25,7 @@ public class UploadServiceController {
     @Autowired
     private RestTemplate restTemplate;
 
-    private final String AUTH_SERVICE_URL = "http://localhost:8085/validate";
+    private final String AUTH_SERVICE_URL = "http://localhost:8085/api/auth/validate";
 
     @PostMapping("/uploadFile")
     @CrossOrigin(origins = "http://localhost:63342")

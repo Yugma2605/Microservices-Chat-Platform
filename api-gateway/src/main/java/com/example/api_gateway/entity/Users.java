@@ -1,7 +1,6 @@
-package com.example.auth_service.entity;
+package com.example.api_gateway.entity;
 
 import jakarta.persistence.*;
-
 @Entity
 public class Users
 {
