@@ -1,4 +1,5 @@
 package com.example.auth_service.service;
+import com.example.auth_service.repository.SecretKeyRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -21,9 +22,16 @@ public class JWTService {
 
 
     private String secretkey = "";
+    private final SecretKeyRepository secretKeyRepository;
 
-    public JWTService(@Value("${jwt.secret}") String secretkey) {
-        this.secretkey = secretkey; // Same key
+    public JWTService(SecretKeyRepository secretKeyRepository) {
+        this.secretKeyRepository = secretKeyRepository;
+        this.secretkey = fetchSecretFromDB();
+    }
+    private String fetchSecretFromDB() {
+        return secretKeyRepository.findByKeyName("jwt.secret-key")
+                .orElseThrow(() -> new IllegalStateException("JWT secret not found in database"))
+                .getKeyValue();
     }
 //    public JWTService() {
 //
