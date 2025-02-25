@@ -165,18 +165,6 @@ Check out the live version of the **Secure Messaging Platform**:
 
 </details>
 
-#
-
-<details open> 
-  <summary><h2>📸 Screenshots</h2></summary>
-
-Here are some screenshots of the platform:
-
-![Messaging Interface](https://via.placeholder.com/600x400.png?text=Messaging+Interface)
-![Authentication](https://via.placeholder.com/600x400.png?text=Authentication)
-![File Upload](https://via.placeholder.com/600x400.png?text=File+Upload)
-
-</details>
 
 #
 
@@ -196,6 +184,7 @@ Here are some screenshots of the platform:
   <summary><h2>📬 Contact</h2></summary>
 Feel free to reach out for any inquiries or suggestions related to the project!
 
-**LinkedIn**: [Your Name](https://www.linkedin.com/in/your-username)
+**LinkedIn**: [Vrukshal Patel](https://www.linkedin.com/in/Vrukshal)
+**LinkedIn**: [Yugma Patel](https://www.linkedin.com/in/yugma-patel)
 
 </details>
