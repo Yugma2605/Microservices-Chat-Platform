@@ -29,7 +29,7 @@ public class ChatController {
     private final ChatMessageService chatMessageService;
 
     @MessageMapping("/chat")
-    @CrossOrigin("http://localhost:63342/")
+//    @CrossOrigin("http://localhost:63342/")
     public void processMessage(@Payload ChatMessage chatMessage) throws JsonProcessingException {
         ChatMessage savedMsg = chatMessageService.save(chatMessage);
         log.info(savedMsg.getChatId()+" "+savedMsg.getRecipientId());
@@ -39,6 +39,8 @@ public class ChatController {
                 .id(savedMsg.getId())
                 .senderId(savedMsg.getSenderId())
                 .recipientId(savedMsg.getRecipientId())
+                .senderUserName(savedMsg.getSenderUserName())
+                .recipientUserName(savedMsg.getRecipientUserName())
                 .filePath(savedMsg.getFilePath())
                 .fileSize(savedMsg.getFileSize())
                 .fileName(savedMsg.getFileName())
@@ -55,7 +57,7 @@ public class ChatController {
 
 
     @GetMapping("/messages/{senderId}/{recipientId}")
-    @CrossOrigin("http://localhost:63342/")
+//    @CrossOrigin("http://localhost:63342/")
     public ResponseEntity<List<ChatMessage>> findChatMessages(
             @PathVariable("senderId") String senderId,
             @PathVariable("recipientId") String recipientId

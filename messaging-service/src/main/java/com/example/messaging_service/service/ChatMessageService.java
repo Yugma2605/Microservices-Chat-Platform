@@ -45,6 +45,8 @@ public class ChatMessageService {
                 .recipientId(chatMessage.getRecipientId())
                 .senderEmail(getEmailFromUserId(chatMessage.getSenderId()))
                 .recipientEmail(getEmailFromUserId(chatMessage.getRecipientId()))
+                .senderUserName(getFullnameFromUserId(chatMessage.getSenderId()))
+                .recipientUserName(getFullnameFromUserId(chatMessage.getRecipientId()))
                 .filePath(chatMessage.getFilePath())
                 .fileSize(chatMessage.getFileSize())
                 .fileName(chatMessage.getFileName())
@@ -59,6 +61,12 @@ public class ChatMessageService {
     public String getEmailFromUserId(String userId){
         return userService.getEmailfromId(userId).get().getEmail();
     }
+
+
+    public String getFullnameFromUserId(String userId){
+        return userService.getFullnamefromId(userId).get().getFullName();
+    }
+
     public FileResponse uploadFile(MultipartFile file, String userId, String userName) {
         FileRequest fileRequest = FileRequest.builder()
                 .file(file)
