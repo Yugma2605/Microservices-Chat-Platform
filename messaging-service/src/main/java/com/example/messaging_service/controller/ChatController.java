@@ -1,10 +1,9 @@
-package com.example.messaging_service.chat;
+package com.example.messaging_service.controller;
 
 
-import com.example.messaging_service.dto.FileResponse;
+import com.example.messaging_service.entity.ChatMessage;
+import com.example.messaging_service.service.ChatMessageService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.example.messaging_service.service.KafkaMessageProducer;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

@@ -29,7 +29,7 @@ public class AuthServiceController {
     @Autowired
     private MyUserDetailsSevice userService;
 
-    @CrossOrigin("http://localhost:63342/")
+//    @CrossOrigin("http://localhost:63342/")
     @PostMapping("/login")
 //    public String login(@RequestBody Users user){
 //        return userService.verify(user);
@@ -37,9 +37,17 @@ public class AuthServiceController {
     public ResponseEntity<?> login(@RequestBody Users user) {
         try {
             String token = userService.verify(user);
+
+            // Fetch user details from the database using the username
+            Users fetchedUser = userService.getUserByUsername(user.getUsername());
+
             Map<String, String> response = new HashMap<>();
             response.put("status", "Success");
             response.put("token", token);
+            response.put("emailId", fetchedUser.getUsername());
+            response.put("fullName", fetchedUser.getFullname());
+//            System.out.println("See the Id : "+user.getId());
+            response.put("id", String.valueOf(fetchedUser.getId()));
             return ResponseEntity.ok(response); // Return the token and success message as a Map
         } catch (Exception e) {
             Map<String, String> errorResponse = new HashMap<>();
@@ -49,7 +57,7 @@ public class AuthServiceController {
         }
     }
 
-    @CrossOrigin("http://localhost:63342/")
+//    @CrossOrigin("http://localhost:63342/")
     @PostMapping("/register")
     public Users createUser(@RequestBody Users user){
         return userService.Register(user);
@@ -73,7 +81,7 @@ public class AuthServiceController {
         }
     }
 
-    @CrossOrigin("http://localhost:63342/")
+//    @CrossOrigin("http://localhost:63342/")
     @PostMapping("/validate")
     public ResponseEntity<String> validateToken(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

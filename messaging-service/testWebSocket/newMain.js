@@ -1,6 +1,7 @@
 'use strict';
 
 // Declare the JWT token variable at the top
+const API_GATEWAY_URL = 'http://localhost:9000';
 let jwtToken = null;
 
 // Wait for DOM to be fully loaded before accessing elements
@@ -52,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = document.querySelector('#regPassword').value.trim();
 
         try {
-            const response = await fetch('http://localhost:8085/api/auth/register', {
+            const response = await fetch(`${API_GATEWAY_URL}/api/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -86,7 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = document.querySelector('#loginPassword').value.trim();
 
         try {
-            const response = await fetch('http://localhost:8085/api/auth/login', {
+//            const response = await fetch(`http://localhost:8085/api/auth/login`, {
+            const response = await fetch(`${API_GATEWAY_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -101,13 +103,15 @@ document.addEventListener('DOMContentLoaded', () => {
     //        console.log("User data outside:"+userData);
             if (response.ok) {
                 const userData = await response.json();
-                console.log("User data:"+userData);
+                console.log("You can see userData: ",userData);
 
                 // Store JWT token and user data
                 jwtToken = userData.token;
-                userId = userData.userId;
-                fullname = userData.fullname; // Updated to match the returned fullname
-                email = userData.username;    // The email is stored in username field
+                console.log("jwtToken : "+jwtToken);
+                userId = userData.id;
+                console.log("userId : "+userId);
+                fullname = userData.fullName; // Updated to match the returned fullname
+                email = userData.emailId;    // The email is stored in username field
 
                 // Store token in localStorage for persistence
                 localStorage.setItem('jwtToken', jwtToken);
@@ -116,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     fullname,
                     email
                 }));
-
                 // Connect to chat after successful login
                 connectToChat();
             } else {
@@ -128,13 +131,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // JWT handling middleware
+    async function fetchWithAuth(url, options = {}) {
+        const headers = {
+            ...options.headers,
+            ...(jwtToken ? { 'Authorization': `Bearer ${jwtToken}` } : {})
+        };
+
+        const response = await fetch(url, {
+            ...options,
+            headers
+        });
+
+        if (response.status === 401) {
+            localStorage.clear();
+            window.location.reload();
+        }
+
+        return response;
+    }
+
     // Check for existing token on page load
     window.onload = async () => {
         const storedToken = localStorage.getItem('jwtToken');
         if (storedToken) {
             try {
                 // Verify token validity with backend
-                const response = await fetch('http://localhost:8085/api/auth/verifyUser', {
+                const response = await fetchWithAuth(`${API_GATEWAY_URL}/api/auth/verifyUser`, {
                     headers: {
                         'Authorization': `Bearer ${storedToken}`
                     }
@@ -164,25 +187,30 @@ document.addEventListener('DOMContentLoaded', () => {
     function connectToChat() {
         loginPage.classList.add('hidden');
         chatPage.classList.remove('hidden');
+        if (userId && fullname && email)
+        {
+//            const socket = new SockJS(`${API_GATEWAY_URL}/ws`);
+            const socket = new SockJS(`http://localhost:8083/ws`);
+            stompClient = Stomp.over(socket);
 
-        const socket = new SockJS('http://localhost:8083/ws');
-        stompClient = Stomp.over(socket);
-
-        // Add JWT to STOMP headers
-        const headers = {
-            'Authorization': `Bearer ${jwtToken}`
-        };
-
-        stompClient.connect(headers, onConnected, onError);
+            // Add JWT to STOMP headers
+//            const headers = {
+//                'Authorization': `Bearer ${jwtToken}`
+//            };
+    //        console.log("Is getting here?");
+            stompClient.connect({}, onConnected, onError);
+        }
     }
 
     // Rest of the existing functions remain the same
     function onConnected() {
+        console.log("Can you see me?")
         stompClient.subscribe(`/user/${userId}/queue/messages`, onMessageReceived);
         stompClient.subscribe(`/user/topic`, onMessageReceived);
 
         stompClient.send("/app/user.addUser",
-            { 'Authorization': `Bearer ${jwtToken}` },
+//            { 'Authorization': `Bearer ${jwtToken}` },
+            {},
             JSON.stringify({userId: userId, fullName: fullname, email: email, status: 'ONLINE'})
         );
         document.querySelector('#connected-user-fullname').textContent = fullname;
@@ -190,7 +218,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function findAndDisplayConnectedUsers() {
-        const connectedUsersResponse = await fetch('http://localhost:8083/api/messaging/users', {
+//        const connectedUsersResponse = await fetch('http://localhost:8083/api/messaging/users');
+        const connectedUsersResponse = await fetchWithAuth(`${API_GATEWAY_URL}/api/messaging/users`, {
             headers: getAuthHeaders()
         });
         let connectedUsers = await connectedUsersResponse.json();
@@ -303,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     async function fetchAndDisplayUserChat() {
-        const userChatResponse = await fetch(`http://localhost:8083/api/messaging/messages/${userId}/${selectedUserId}`, {
+        const userChatResponse = await fetchWithAuth(`${API_GATEWAY_URL}/api/messaging/messages/${userId}/${selectedUserId}`, {
             headers: getAuthHeaders()
         });
         const userChat = await userChatResponse.json();
@@ -328,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log("UPLOAD FORMDATA ::::",formData);
         // Upload file to port 8084
-        const response = await fetch('http://localhost:8084/api/upload', {
+        const response = await fetchWithAuth(`${API_GATEWAY_URL}/api/upload/uploadFile`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${jwtToken}`
@@ -346,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function downloadFile(fileUrl) {
         try {
-            const response = await fetch(`http://localhost:8084/api/upload/download?fileUrl=${encodeURIComponent(fileUrl)}`, {
+            const response = await fetchWithAuth(`${API_GATEWAY_URL}/api/upload/download?fileUrl=${encodeURIComponent(fileUrl)}`, {
                 headers: getAuthHeaders()
             });
 

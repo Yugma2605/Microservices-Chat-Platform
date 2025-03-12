@@ -57,4 +57,8 @@ public class MyUserDetailsSevice implements UserDetailsService {
         return repo.save(user);
     }
 
+    public Users getUserByUsername(String username) {
+        // Fetch the user from the database by username
+        return repo.findByUsername(username);
+    }
 }

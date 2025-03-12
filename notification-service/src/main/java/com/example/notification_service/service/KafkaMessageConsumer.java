@@ -1,14 +1,12 @@
 package com.example.notification_service.service;
 
 import com.example.shared.ChatNotification;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
-import com.example.notification_service.dto.EmailResponse;
+
 import java.io.IOException;
 
 @Service

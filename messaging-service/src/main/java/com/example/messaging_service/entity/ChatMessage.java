@@ -1,4 +1,4 @@
-package com.example.messaging_service.chat;
+package com.example.messaging_service.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

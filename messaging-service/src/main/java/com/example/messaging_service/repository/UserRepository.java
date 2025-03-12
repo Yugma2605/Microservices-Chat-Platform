@@ -1,10 +1,7 @@
 package com.example.messaging_service.repository;
 
 import com.example.messaging_service.user.Status;
-import com.example.messaging_service.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.example.messaging_service.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -35,9 +35,11 @@ public class SecurityConfig {
         // sessionManagement helps us to make the session stateless ( no worry for CSRF or session hijacking )
         // Why login and register has given permission because we can't just check for JWT at login and register page
         // addFilterBefore is added for checking the JWT before it goes for the main filter of User Password Authentication
-        return http.csrf(customizer -> customizer.disable()).
+        return http
+//                .cors(cors -> cors.disable())
+                .csrf(customizer -> customizer.disable()).
                 authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/register", "/ws/info").permitAll()
                         .anyRequest().authenticated()).
                 httpBasic(Customizer.withDefaults()).
                 sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

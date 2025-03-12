@@ -1,12 +1,10 @@
-package com.example.messaging_service.user;
+package com.example.messaging_service.entity;
 
+import com.example.messaging_service.user.Status;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
-import lombok.Generated;
-
-import java.lang.annotation.Documented;
 
 @Data
 @Entity

@@ -1,4 +1,4 @@
-package com.example.messaging_service.chatroom;
+package com.example.messaging_service.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,8 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.lang.annotation.Documented;
 
 @Entity
 @Data

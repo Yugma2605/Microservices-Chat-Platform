@@ -1,13 +1,11 @@
-package com.example.messaging_service.chat;
+package com.example.messaging_service.service;
 
+import com.example.messaging_service.entity.ChatMessage;
+import com.example.messaging_service.repository.ChatMessageRepository;
 import com.example.shared.ChatNotification;
-import com.example.messaging_service.chatroom.ChatRoomService;
 import com.example.messaging_service.dto.FileRequest;
 import com.example.messaging_service.dto.FileResponse;
-import com.example.messaging_service.service.KafkaMessageProducer;
-import com.example.messaging_service.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

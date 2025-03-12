@@ -23,6 +23,10 @@ public class UserPrincipal implements UserDetails {
 
     }
 
+    public String getFullname() {
+        return user.getFullname();
+    }
+
     @Override
     public String getPassword() {
         return user.getPassword();

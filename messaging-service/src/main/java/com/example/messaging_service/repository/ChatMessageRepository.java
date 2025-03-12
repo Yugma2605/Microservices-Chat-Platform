@@ -1,5 +1,7 @@
-package com.example.messaging_service.chat;
+package com.example.messaging_service.repository;
 import java.util.List;
+
+import com.example.messaging_service.entity.ChatMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

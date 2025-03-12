@@ -2,7 +2,7 @@ package com.example.messaging_service.service;
 
 import com.example.messaging_service.repository.UserRepository;
 import com.example.messaging_service.user.Status;
-import com.example.messaging_service.user.User;
+import com.example.messaging_service.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +31,9 @@ public class UserService {
 
     }
     public Optional<User> getEmailfromId(String userId){
+        return repository.findById(userId);
+    }
+    public Optional<User> getFullnamefromId(String userId){
         return repository.findById(userId);
     }
     public List<User> findConnectedUsers(){

@@ -1,7 +1,7 @@
 package com.example.messaging_service.controller;
 
 import com.example.messaging_service.service.UserService;
-import com.example.messaging_service.user.User;
+import com.example.messaging_service.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +9,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -37,7 +36,7 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    @CrossOrigin(origins = "http://localhost:63342")
+//    @CrossOrigin(origins = "http://localhost:63342")
     public ResponseEntity<List<User>> findConnectedUsers(){
         return ResponseEntity.ok(userService.findConnectedUsers());
     }

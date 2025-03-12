@@ -1,10 +1,10 @@
-package com.example.messaging_service.chatroom;
+package com.example.messaging_service.service;
 
-import lombok.NoArgsConstructor;
+import com.example.messaging_service.entity.ChatRoom;
+import com.example.messaging_service.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service

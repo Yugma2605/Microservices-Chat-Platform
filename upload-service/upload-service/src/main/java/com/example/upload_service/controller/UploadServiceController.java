@@ -28,7 +28,7 @@ public class UploadServiceController {
     private final String AUTH_SERVICE_URL = "http://localhost:8085/api/auth/validate";
 
     @PostMapping("/uploadFile")
-    @CrossOrigin(origins = "http://localhost:63342")
+//    @CrossOrigin(origins = "http://localhost:63342")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<FileResponse> uploadFile(
             @RequestParam("file") MultipartFile file,
@@ -75,7 +75,7 @@ public class UploadServiceController {
 //        return new ResponseEntity<>(fileResponse, HttpStatus.CREATED);
 //    }
 
-    @CrossOrigin(origins = "http://localhost:63342")
+//    @CrossOrigin(origins = "http://localhost:63342")
     @GetMapping("/download")
     public ResponseEntity<String> generateSignedUrl(
             @RequestParam("fileUrl") String fileUrl) {
@@ -87,7 +87,7 @@ public class UploadServiceController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:63342")
+//    @CrossOrigin(origins = "http://localhost:63342")
     @GetMapping("/hello")
     public ResponseEntity<String> test(
             ) {

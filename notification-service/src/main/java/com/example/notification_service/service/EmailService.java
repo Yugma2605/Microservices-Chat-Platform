@@ -15,7 +15,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import com.example.notification_service.dto.EmailResponse;
 
 @Service
 @Slf4j
@@ -56,7 +55,7 @@ public class EmailService {
 
             String body = String.format(
                     "You have a new message from %s: %s\n\n%s",
-                    details.getSenderId(),
+                    details.getSenderUserName(),
                     details.getContent(),
                     fileMessage
             );
