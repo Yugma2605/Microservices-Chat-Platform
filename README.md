@@ -186,5 +186,6 @@ Feel free to reach out for any inquiries or suggestions related to the project!
 
 **LinkedIn**: [Vrukshal Patel](https://www.linkedin.com/in/Vrukshal)
 **LinkedIn**: [Yugma Patel](https://www.linkedin.com/in/yugma-patel)
+**LinkedIn**: [Ansh Ray](https://www.linkedin.com/in/ansh-ray-092668205)
 
 </details>
